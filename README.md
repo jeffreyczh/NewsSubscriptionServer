@@ -13,9 +13,9 @@ node.js, mongodb, socket, RSS, server, authentication security, net(nodejs modul
 The server is implemented with socket in <em>Node.js</em>.<br />
 It queries the database(<em>MongoDB</em>) running on another instance.<br />
 Log in authentication is provided.<br />
-Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as clients related to this.<br />
+Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as clients related to this. (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)<br />
 Any questions/suggestions/modifications are welcome.<br />
-:) (Is it possible to insert emoticons?)
+:) (Is it possible to insert emoticons?) Thank you!
 
 <h2>More...</h2>
 <h3>Authentication</h3>
