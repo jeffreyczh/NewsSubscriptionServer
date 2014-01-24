@@ -1,29 +1,83 @@
 var net = require('net');
-var PORT = process.env.PORT || 6969;
+var crypto = require("crypto");
+var MongoClient = require('mongodb').MongoClient;
+var constant = require('./constant');
+var pwdHashing = require('./pwdHashing');
+var newsUtil = require('./newsUtil');
+var HOST = '172.31.34.58';
+var PORT = 1215;
+/* host and port of the mongodb instance */
+var DB_HOST = '172.31.47.131';
+var DB_PORT = "27017";
 
-// Create a server instance, and chain the listen function to it
-// The function passed to net.createServer() becomes the event handler for the 'connection' event
-// The sock object the callback function receives UNIQUE for each connection
-net.createServer(function(sock) {
+net.createServer(function(socket) {
+    socket.setEncoding('utf8');
+    console.log('CONNECTED: ' + socket.remoteAddress +' : '+ socket.remotePort);
+	
+	auth(socket, function(){});
     
-    // We have a connection - a socket object is assigned to the connection automatically
-    console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
-    
-    // Add a 'data' event handler to this instance of socket
-    sock.on('data', function(data) {
-        
-        console.log('DATA ' + sock.remoteAddress + ': ' + data);
-        // Write the data back to the socket, the client will receive it as data from the server
-		sock.write('You said "' + data + '"');
-        
-        
+    socket.on('close', function(data) {
+        // future use
     });
-    
-    // Add a 'close' event handler to this instance of socket
-    sock.on('close', function(data) {
-        console.log('CLOSED: ' + sock.remoteAddress +' '+ sock.remotePort);
-    });
-    
-}).listen(PORT);
 
-console.log('Server listening on :'+ PORT);
+	socket.on('error', function(e) {
+		console.log(e);
+	});
+    
+}).listen(PORT, HOST);
+
+console.log('Server started. listening on ' + HOST + ':' + PORT);
+
+/**
+  * Authenticate the login
+  * socket: the connection stream
+  * callback: the callback function after the authentication succeeds
+  */
+function auth(socket, callback) {
+	// generate the token
+	crypto.randomBytes(128, function(e, randomKey) {
+		var key = randomKey.toString('base64'); // use this encoded one to encrypt and decrypt
+		socket.write(constant.token + key + constant.endOfData);
+
+		socket.on('data', function(chunk) {
+			// check if the client responsed with auth information
+			var authInfo = newsUtil.getContent(chunk, constant.token);
+			if (authInfo == undefined) {
+				// the response does not contain any auth information
+				// or the returned auth information is abnormally too long
+				// close the connection in case of possible malicious operations
+				socket.end();
+			} else {
+				// decode the auth string back to json object
+				var userObj = JSON.parse(authInfo);
+				// check the database
+				MongoClient.connect('mongodb://' + DB_HOST + ':' + DB_PORT + '/news', function(err, db) {
+					var collection = db.collection('users');
+					collection.findOne({'userName':userObj.userName}, function(err, result) {
+						if (result == null) {
+							// not existing user
+							socket.end();
+						} else {
+							// decrypt and get the password
+							pwdHashing.decryptPwd(userObj.password, key, function(plainPwd){
+								var salt = result.salt;
+								pwdHashing.hashPwd(plainPwd, salt, function(hashedPwd) {
+									if (hashedPwd == result.password) {
+										// authenticate successfully
+										console.log('User: ' + userObj.userName + ' log in successfully.');
+										if (typeof(callback) === 'function') {
+											callback();
+										}
+									} else {
+										console.log('User: ' + userObj.userName + ' gave wrong password.');
+										socket.end();
+									}
+								});
+							});
+						}
+					});
+				});
+			}
+		});
+	});
+}
