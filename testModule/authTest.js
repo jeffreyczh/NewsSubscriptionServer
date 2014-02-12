@@ -23,17 +23,25 @@ client.connect(PORT, HOST, function() {
 // Add a 'data' event handler for the client socket
 // data is what the server sent to this socket
 client.on('data', function(chunk) {
-	var token = newsUtil.getContent(chunk, constant.token);
-	console.log('Token received:' + token);
-	var en_pwd = encryptPwd('testPwd1', token);
-	var userObj = {
-		userName: 'testUser1',
-		password: en_pwd
-	};
-	var json_str = JSON.stringify(userObj);
-	console.log('Auth informatin I am going to provide:' + json_str);
-	client.write(constant.token + json_str + constant.endOfData);
-    client.destroy();  
+	var revObj = JSON.parse(chunk);
+	var msgType = revObj.msgType;
+	if (msgType == constant.token) {
+		var token = revObj.content;
+		console.log('Token received:' + token);
+		var en_pwd = encryptPwd('testPwd1', token); // right one
+		//var en_pwd = encryptPwd('testPwd', token);
+		var userObj = {
+			userName: 'testUser1',
+			password: en_pwd
+		};
+		var json_str = newsUtil.generateMsg(constant.login, userObj);
+		console.log('Auth informatin I am going to provide:' + json_str);
+		client.write(json_str);
+	} else {
+		console.log('[ERROR: undefined message type]');
+	}
+	
+    //client.destroy();  
 });
 
 // Add a 'close' event handler for the client socket

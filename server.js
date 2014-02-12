@@ -37,19 +37,24 @@ function auth(socket, callback) {
 	// generate the token
 	crypto.randomBytes(128, function(e, randomKey) {
 		var key = randomKey.toString('base64'); // use this encoded one to encrypt and decrypt
-		socket.write(constant.token + key + constant.endOfData);
+		socket.write(newsUtil.generateMsg(constant.token, key));
 
 		socket.on('data', function(chunk) {
 			// check if the client responsed with auth information
-			var authInfo = newsUtil.getContent(chunk, constant.token);
-			if (authInfo == undefined) {
+			var revObj = JSON.parse(chunk);
+			var msgType = revObj.msgType;
+			if (msgType != constant.login) {
+				console.log('The message type: ' + msgType + ' is undefined.');
+				socket.end();
+				return;
+			}
+			var userObj = revObj.content;
+			if (userObj == undefined) {
 				// the response does not contain any auth information
 				// or the returned auth information is abnormally too long
 				// close the connection in case of possible malicious operations
 				socket.end();
 			} else {
-				// decode the auth string back to json object
-				var userObj = JSON.parse(authInfo);
 				// check the database
 				MongoClient.connect('mongodb://' + DB_HOST + ':' + DB_PORT + '/news', function(err, db) {
 					var collection = db.collection('users');

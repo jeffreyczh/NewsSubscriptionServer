@@ -2,19 +2,19 @@
  * Some helper functions here
  */
 var constant = require('./constant');
+
  /**
-   * Get the communication content from the received string
-   * In other words, it gets the content between the header and the footer
-   * Please see constant.js for the provided header and footer
-   * Returns the content
-   * NOTE: It will return 'undefined' if there are no content or 
-   *       the data doesn't match the header + footer
+   * Generate a JSON string for communication
+   * Returns the JSON string
+   * msgType: the type of the message, see constant.js for the values
+   * content: the message content that will be wrapped. It could be a string or object
    */
- function getContent(revData, header) {
-	 var index_left = revData.indexOf(header);
-	 var index_right = revData.indexOf(constant.endOfData);
-	 return revData.substring(index_left + header.length, index_right);
+ function generateMsg(msgType, content) {
+	var msgObj = {
+		msgType: msgType,
+		content: content
+	};
+	return JSON.stringify(msgObj);
  }
 
-
- exports.getContent = getContent;
+ exports.generateMsg = generateMsg;
