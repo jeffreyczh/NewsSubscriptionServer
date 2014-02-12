@@ -1,6 +1,6 @@
 /*
- * Test the authentication
- * This can also be used for your reference to implement the client
+ * Possible implementation of client side
+ * The authentication part is as same as the process in authTest.js
  */
 
 var net = require('net');
@@ -27,21 +27,20 @@ client.once('data', function(chunk) {
 	var msgType = revObj.msgType;
 	if (msgType == constant.token) {
 		var token = revObj.content;
-		console.log('Token received:' + token);
-		//var en_pwd = encryptPwd('testPwd1', token); // right one
-		var en_pwd = encryptPwd('testPwd', token);
+		var en_pwd = encryptPwd('testPwd1', token); // right one
+		//var en_pwd = encryptPwd('testPwd', token);
 		var userObj = {
 			userName: 'testUser1',
 			password: en_pwd
 		};
 		var json_str = newsUtil.generateMsg(constant.login, userObj);
-		console.log('Auth informatin I am going to provide:' + json_str);
 		client.write(json_str);
 		client.on('data', function(newChunk) {
 			var revObj2 = JSON.parse(newChunk);
 			var success = revObj2.content;
 			if (success) {
 				console.log('Log in Successfully!');
+				client.write(newsUtil.generateMsg(constant.updateNow));
 			} else {
 				console.log('Log in Failed: Wrong user name or password.');
 				client.destroy();

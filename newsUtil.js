@@ -17,4 +17,5 @@ var constant = require('./constant');
 	return JSON.stringify(msgObj);
  }
 
+
  exports.generateMsg = generateMsg;

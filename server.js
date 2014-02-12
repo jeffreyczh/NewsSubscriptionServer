@@ -4,17 +4,33 @@ var MongoClient = require('mongodb').MongoClient;
 var constant = require('./constant');
 var pwdHashing = require('./pwdHashing');
 var newsUtil = require('./newsUtil');
+var router = require('./router');
+var requestHandler = require('./requestHandler');
+
 var HOST = '172.31.34.58';
 var PORT = 1215;
 /* host and port of the mongodb instance */
 var DB_HOST = '172.31.47.131';
 var DB_PORT = "27017";
 
+// the handler for requests, used by the router
+var handle = {};
+handle[constant.updateNow] = requestHandler.updateNow;
+handle[constant.logout] = requestHandler.logout;
+
 net.createServer(function(socket) {
     socket.setEncoding('utf8');
     console.log('CONNECTED: ' + socket.remoteAddress +' : '+ socket.remotePort);
 	
-	auth(socket, function(){});
+	auth(socket, function(socket, userName){
+		// login successfully
+		// replace the event handler from handling authentication to handling requests
+		socket.on('data', function(chunk) {
+			var revObj = JSON.parse(chunk);
+			// go to the router
+			router.route(handle, revObj.msgType, socket, userName, revObj.content);
+		});
+	});
     
     socket.on('close', function(data) {
         // future use
@@ -31,7 +47,8 @@ console.log('Server started. listening on ' + HOST + ':' + PORT);
 /**
   * Authenticate the login
   * socket: the connection stream
-  * callback: the callback function after the authentication succeeds
+  * callback: the callback function after the authentication succeeds.
+  *           it takes the socket and the userName as arguments.
   */
 function auth(socket, callback) {
 	// generate the token
@@ -39,7 +56,7 @@ function auth(socket, callback) {
 		var key = randomKey.toString('base64'); // use this encoded one to encrypt and decrypt
 		socket.write(newsUtil.generateMsg(constant.token, key));
 
-		socket.on('data', function(chunk) {
+		socket.once('data', function(chunk) {
 			// check if the client responsed with auth information
 			var revObj = JSON.parse(chunk);
 			var msgType = revObj.msgType;
@@ -58,9 +75,11 @@ function auth(socket, callback) {
 				// check the database
 				MongoClient.connect('mongodb://' + DB_HOST + ':' + DB_PORT + '/news', function(err, db) {
 					var collection = db.collection('users');
-					collection.findOne({'userName':userObj.userName}, function(err, result) {
+					var userName = userObj.userName;
+					collection.findOne({'userName':userName}, function(err, result) {
 						if (result == null) {
 							// not existing user
+							socket.write(newsUtil.generateMsg(constant.login, false));
 							socket.end();
 						} else {
 							// decrypt and get the password
@@ -69,12 +88,14 @@ function auth(socket, callback) {
 								pwdHashing.hashPwd(plainPwd, salt, function(hashedPwd) {
 									if (hashedPwd == result.password) {
 										// authenticate successfully
-										console.log('User: ' + userObj.userName + ' log in successfully.');
+										console.log('User: ' + userName + ' log in successfully.');
+										socket.write(newsUtil.generateMsg(constant.login, true));
 										if (typeof(callback) === 'function') {
-											callback();
+											callback(socket, userName);
 										}
 									} else {
-										console.log('User: ' + userObj.userName + ' gave wrong password.');
+										console.log('User: ' + userName + ' gave wrong password.');
+										socket.write(newsUtil.generateMsg(constant.login, false));
 										socket.end();
 									}
 								});
