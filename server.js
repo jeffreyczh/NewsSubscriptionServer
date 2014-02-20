@@ -29,10 +29,20 @@ net.createServer(function(socket) {
 		user_name = userName;
 		// login successfully
 		// replace the event handler from handling authentication to handling requests
+		var totalData = '';
 		socket.on('data', function(chunk) {
-			var revObj = JSON.parse(chunk);
-			// go to the router
-			router.route(handle, socket, db, userName, revObj.msgType, revObj.content);
+			try {
+				totalData += chunk;
+				var revObj = JSON.parse(totalData);
+				// go to the router
+				router.route(handle, socket, db, userName, revObj.msgType, revObj.content);
+				totalData = '';
+			} catch (e) {
+				if (e.name != 'SyntaxError') {
+					console.log('[ERROR]: ' + e);
+					totalData = '';
+				}
+			}
 		});
 	});
     

@@ -46,7 +46,9 @@ client.once('data', function(chunk) {
 					var success = revObj2.content;
 					if (success) {
 						console.log('Log in Successfully!');
-						client.write(newsUtil.generateMsg(constant.update));
+						// client.write(newsUtil.generateMsg(constant.update)); // update all RSS
+						client.write(newsUtil.generateMsg(constant.update, 
+									{urls: ['http://www.developer-tech.com/feed/', 'http://news.qq.com/newsgn/rss_newsgn.xml']})); // update some of the RSS
 					} else {
 						console.log('Log in Failed: Wrong user name or password.');
 						client.destroy();
@@ -54,8 +56,10 @@ client.once('data', function(chunk) {
 				} else if (revObj2.msgType == constant.update) {
 					var RSSItem = revObj2.content;
 					// simply display the update here, you may develop GUI to show those updates
-					console.log(RSSItem.url + ": ");
+					console.log(RSSItem.name + ' --- ' + RSSItem.url + ": ");
 					console.log(RSSItem.content);
+					console.log('Last Checked: ' + RSSItem.lastChecked);
+					console.log('---------------------------------------------------');
 				} else {
 					console.log('Unknown message type: ' + revObj2.msgType);
 				}
@@ -64,6 +68,7 @@ client.once('data', function(chunk) {
 			catch (e) {
 				if (e.name != 'SyntaxError') {
 					console.log('[ERROR]: ' + e);
+					totalData = '';
 				}
 			}
 			

@@ -15,26 +15,30 @@ var constant = require('./constant');
   */
 function update(socket, db, userName, msgContent) {
 	var collection = db.collection('favs');
+	var urls_arr = []; // the urls of thoese RSS that need to be updated
 	if (msgContent) {
-	} else {
-		// update all RSS
-		collection.find({'userName': userName})
-					.each(function(err, item) {
-						if (item) {
-							getRSS(item, function(modifiedItem, returnedContent) {
-								collection.update({'userName': userName, 'url': item.url},
-												   item, {}, function(err) {
+		urls_arr = msgContent.urls;
+	}
+	// update all RSS
+	collection.find({'userName': userName})
+				.each(function(err, item) {
+					if (item) {
+						if (urls_arr.length == 0 || urls_arr.indexOf(item.url) != -1) {
+							getRSS(item, function(returnedContent) {
+							socket.write(newsUtil.generateMsg(constant.update, {'name': item.name, 'url': item.url, 'content': returnedContent, 'lastChecked': item.lastChecked}));
+							collection.update({'userName': userName, 'url': item.url},
+												item, {}, function(err) {
 									if (err) {
 										console.log('[ERROR]: Fail to update: ' + err);
 									}
 								});
-								socket.write(newsUtil.generateMsg(constant.update, {'url': item.url, 'content': returnedContent}));
 							});
-						} else {
-							// no more RSS items
 						}
-					});
-	}
+						
+					} else {
+						// no more RSS items
+					}
+				});
 }
 
 function logout(socket, db) {
@@ -44,7 +48,8 @@ function logout(socket, db) {
 /**
   * Gets one RSS
   * item: one of the RSS items from the database
-  * callback: the callback function that holds the modified item and RSS content as arguments
+  * callback: the callback function that holds the RSS content as the argument
+  *           if the returned content is null, the RSS doesn't has any update
   */
 function getRSS(item, callback) {
 	var urlObj = url.parse(item.url);
@@ -90,11 +95,14 @@ function getRSS(item, callback) {
 					isUpdated = true;
 				}
 			}
+			var date = new Date();
+			item.lastChecked = date.toUTCString();
+			var total = '';
 			if (isUpdated) {
 				// encode the response text
 				var buff = bufferHelper.toBuffer();
 				// check the charset for the further encoding
-				var total = iconv.decode(bufferHelper.toBuffer(),'utf-8');
+				total = iconv.decode(bufferHelper.toBuffer(),'utf-8');
 				var charset = total.match(/xml version=.+encoding=\"(.+)\"/);
 				if (charset == null) {
 					charset = 'utf-8';
@@ -104,11 +112,9 @@ function getRSS(item, callback) {
 				if (charset != 'utf-8') {
 					total = iconv.decode(bufferHelper.toBuffer(),charset);
 				}
-				var date = new Date();
-				item.lastUpdated = date.toUTCString();
-				if (typeof(callback) === 'function') {
-					callback(item, total);
-				}
+			}
+			if (typeof(callback) === 'function') {
+				callback(total);
 			}
 		});
 	});
