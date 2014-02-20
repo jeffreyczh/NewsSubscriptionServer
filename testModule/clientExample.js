@@ -35,16 +35,38 @@ client.once('data', function(chunk) {
 		};
 		var json_str = newsUtil.generateMsg(constant.login, userObj);
 		client.write(json_str);
+		var totalData = '';
 		client.on('data', function(newChunk) {
-			var revObj2 = JSON.parse(newChunk);
-			var success = revObj2.content;
-			if (success) {
-				console.log('Log in Successfully!');
-				client.write(newsUtil.generateMsg(constant.updateNow));
-			} else {
-				console.log('Log in Failed: Wrong user name or password.');
-				client.destroy();
+			
+			try {
+				totalData += newChunk;
+				var revObj2 = JSON.parse(totalData);
+				// handle responses based on the message type
+				if (revObj2.msgType == constant.login) {
+					var success = revObj2.content;
+					if (success) {
+						console.log('Log in Successfully!');
+						client.write(newsUtil.generateMsg(constant.update));
+					} else {
+						console.log('Log in Failed: Wrong user name or password.');
+						client.destroy();
+					}
+				} else if (revObj2.msgType == constant.update) {
+					var RSSItem = revObj2.content;
+					// simply display the update here, you may develop GUI to show those updates
+					console.log(RSSItem.url + ": ");
+					console.log(RSSItem.content);
+				} else {
+					console.log('Unknown message type: ' + revObj2.msgType);
+				}
+				totalData = '';
 			}
+			catch (e) {
+				if (e.name != 'SyntaxError') {
+					console.log('[ERROR]: ' + e);
+				}
+			}
+			
 		});
 	} 
 	else {

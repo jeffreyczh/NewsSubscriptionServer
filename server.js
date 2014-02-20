@@ -15,20 +15,24 @@ var DB_PORT = "27017";
 
 // the handler for requests, used by the router
 var handle = {};
-handle[constant.updateNow] = requestHandler.updateNow;
+handle[constant.update] = requestHandler.update;
 handle[constant.logout] = requestHandler.logout;
 
 net.createServer(function(socket) {
     socket.setEncoding('utf8');
     console.log('CONNECTED: ' + socket.remoteAddress +' : '+ socket.remotePort);
+	var dbObj = null;
+	var user_name = null;
 	
-	auth(socket, function(socket, userName){
+	auth(socket, function(socket, db, userName){
+		dbObj = db;
+		user_name = userName;
 		// login successfully
 		// replace the event handler from handling authentication to handling requests
 		socket.on('data', function(chunk) {
 			var revObj = JSON.parse(chunk);
 			// go to the router
-			router.route(handle, revObj.msgType, socket, userName, revObj.content);
+			router.route(handle, socket, db, userName, revObj.msgType, revObj.content);
 		});
 	});
     
@@ -37,7 +41,16 @@ net.createServer(function(socket) {
     });
 
 	socket.on('error', function(e) {
-		console.log(e);
+		if (e.code === "ECONNRESET") {
+			if (dbObj) {
+				dbObj.close();
+			}
+			if (user_name) {
+				console.log(user_name + ' closed the connection');
+			}
+		} else {
+			console.log(e);
+		}
 	});
     
 }).listen(PORT, HOST);
@@ -48,7 +61,7 @@ console.log('Server started. listening on ' + HOST + ':' + PORT);
   * Authenticate the login
   * socket: the connection stream
   * callback: the callback function after the authentication succeeds.
-  *           it takes the socket and the userName as arguments.
+  *           it takes the socket, mongoDB object and the userName as arguments.
   */
 function auth(socket, callback) {
 	// generate the token
@@ -81,6 +94,7 @@ function auth(socket, callback) {
 							// not existing user
 							socket.write(newsUtil.generateMsg(constant.login, false));
 							socket.end();
+							db.close();
 						} else {
 							// decrypt and get the password
 							pwdHashing.decryptPwd(userObj.password, key, function(plainPwd){
@@ -91,12 +105,13 @@ function auth(socket, callback) {
 										console.log('User: ' + userName + ' log in successfully.');
 										socket.write(newsUtil.generateMsg(constant.login, true));
 										if (typeof(callback) === 'function') {
-											callback(socket, userName);
+											callback(socket, db, userName);
 										}
 									} else {
 										console.log('User: ' + userName + ' gave wrong password.');
 										socket.write(newsUtil.generateMsg(constant.login, false));
 										socket.end();
+										db.close();
 									}
 								});
 							});

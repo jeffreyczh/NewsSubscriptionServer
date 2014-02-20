@@ -10,4 +10,4 @@
 exports.token = "_#TOKEN#_"; // ask for token for the client to encrypt the password before every login
 exports.login = "_#LOGIN#_";
 exports.logout = "_#LOGOUT#_";
-exports.updateNow = "_#UPDATENOW#_"; // update the specified RSS immediately
+exports.update = "_#UPDATE#_"; // update the specified RSS immediately
