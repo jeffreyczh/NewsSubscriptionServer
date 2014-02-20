@@ -16,14 +16,49 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 <li>Log in authentication is provided</li>
 <li>Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as clients related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)</li>
 <li>Any questions/suggestions/modifications are welcome</li>
-<li>:) (Is it possible to insert emoticons?)</li>
-<li>Thank you!</li>
+<li>:) Thank you!</li>
 </ul>
 
+<h2>Quick Navigation</h2>
+<a href='#before-you-begin'>Before You Begin...</a>, <a href='#authentication'>Authentication</a>
+
 <h2>More...</h2>
+<h3>Before You Begin...</h3>
+<ul>
+<li>You may need two instances, with one running the server, and another one running MongoDB</li>
+<li>This project is tested on Amazon EC2 cloud platform</li>
+<li>The project assumes that the database is organized as:
+    <ul>
+	<li>Name of the database: news</li>
+	<li>Collections: 
+		<ul>
+			<li>users: authentication information of all users</li>
+			<li>favs: favorite RSS list of all users</li>
+		</ul>
+	</li>
+	<li>Fields in 'users': 
+		<ul>
+			<li>userName</li>
+			<li>password (hashed)</li>
+			<li>salt</li>
+		</ul>
+	<li>Fields in 'favs': 
+		<ul>
+			<li>userName</li>
+			<li>url (the url of a RSS source)</li>
+			<li>name (customized name for this RSS)</li>
+			<li>lastModified (for the 'If-Modified-Since' HTTP header to use to check if there is any update)</li>
+			<li>md5 (MD5 of the content for comparison, usually used when the 'If-Modified-Since' header is not available)</li>
+			<li>lastChecked</li>
+		</ul>
+	</li>
+    </ul>
+</li>
+</ul>
+
 <h3>Authentication</h3>
 <ul>
-<li>The authentication is implemented with the 'crypto' module.</li>
+<li>The authentication is implemented with the 'crypto' module</li>
 <li>Salt is used to hash the password.<br /> 
     So in the data base, user information is stored as: userName, password(hashed) and salt</li>
 <li>When the client logs in, the server will generate a token and give this token for the client
