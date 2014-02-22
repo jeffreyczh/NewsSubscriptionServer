@@ -118,6 +118,27 @@ and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used fo
 			<em>url</em>, <em>content</em> (the updated content), <em>lastChecked</em> (the last-checked time stamp in GMT)</li>
 		</ol>
 	</li>
+	<li><b>Modify the favourite list:</b>
+		<ul>
+			<li>Add, modify or remove one or multiple RSS to/from the database is allowed</li>
+			<li>msgType: <em>constant.add</em> for adding new RSS to the list, 
+				     <em>constant.modify</em> for modifying existing RSS in the list, and 
+				     <em>constant.remove</em> for removing existing RSS from the list</li>
+			<li>content: an <em>array list</em> of objects. The object could be formatted as:
+				<ul>
+					<li>For adding & modifying: with key <em>url</em> and <em>name</em></li>
+					<li>For removing: with key <em>url</em></li>
+				</ul>
+			</li>
+			<li>Response from the server will have the <em>msgType</em> the same to the requesting message type. The <em>content</em> is an object containing 1. <em>result</em>, a boolean indicating if the request is successfully proceeded, and 2. <em>errorMsg</em>, a string to show the error message if the <em>result</em> is fault. It is an empty string if the <em>result</em> is true.</li>
+		</ul>
+	</li>
+	<li><b>Logout:</b>
+		<ul>
+			<li>For now, just simply close the socket of the client to end the connection</li>
+			<li>More features of logout handling might be added in the future</li>
+		</ul>
+	</li>
 
 </ul>
 
