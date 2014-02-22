@@ -16,7 +16,9 @@ var DB_PORT = "27017";
 // the handler for requests, used by the router
 var handle = {};
 handle[constant.update] = requestHandler.update;
-handle[constant.logout] = requestHandler.logout;
+handle[constant.add] = requestHandler.add;
+handle[constant.modify] = requestHandler.modify;
+handle[constant.remove] = requestHandler.remove;
 
 net.createServer(function(socket) {
     socket.setEncoding('utf8');
@@ -46,19 +48,21 @@ net.createServer(function(socket) {
 		});
 	});
     
-    socket.on('close', function(data) {
-        // future use
+    socket.on('close', function(had_error) {
+		// logout\accidental connection closed handling
+        if (dbObj) {
+			dbObj.close();
+		}
+		if (user_name) {
+			console.log(user_name + ' closed the connection');
+		} else {
+			console.log(socket.remoteAddress +': '+ socket.remotePort + ' closed the connection');
+		}
+		console.log('Closed normally?: ' + had_error);
     });
 
 	socket.on('error', function(e) {
-		if (e.code === "ECONNRESET") {
-			if (dbObj) {
-				dbObj.close();
-			}
-			if (user_name) {
-				console.log(user_name + ' closed the connection');
-			}
-		} else {
+		if (e.code !== "ECONNRESET") {
 			console.log(e);
 		}
 	});

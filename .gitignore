@@ -221,3 +221,11 @@ pip-log.txt
 #key
 *.pem
 *.ppk
+
+
+#############
+## Own-defined
+#############
+
+#External Node Modules
+node_modules/

@@ -9,5 +9,14 @@ MongoClient.connect('mongodb://' + DB_HOST + ':' + DB_PORT + '/news', function(e
 		console.log('password: ' + result.password);
 		console.log('salt: ' + result.salt);
 	});
+	/*var collection = db.collection('favs');
+	collection.findAndModify(
+		{'userName':'testUser1', 'url': 'http://news.qq.com/newsgn/rss_newsgn.xml'}, 
+		null, 
+		{$set: {'name': 'Tencent News'}},
+		{'new': true, 'upsert': true},
+		function(err, object) {
+			console.log('return: ' + object);
+	});*/
 	
 });

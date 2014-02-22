@@ -15,7 +15,7 @@ var constant = require('./constant');
   */
 function update(socket, db, userName, msgContent) {
 	var collection = db.collection('favs');
-	var urls_arr = []; // the urls of thoese RSS that need to be updated
+	var urls_arr = []; // the urls of those RSS that need to be updated
 	if (msgContent) {
 		urls_arr = msgContent.urls;
 	}
@@ -41,10 +41,88 @@ function update(socket, db, userName, msgContent) {
 				});
 }
 
-function logout(socket, db) {
-	socket.end();
-	db.close();
+/**
+  * Add a new RSS
+  * If the RSS has already existed, which there is a RSS with the same url, it will be replaced by the new one
+  */
+function add(socket, db, userName, msgContent) {
+	var collection = db.collection('favs');
+	var RSSObjs = msgContent;
+	for (var i = 0, max = RSSObjs.length; i < max; i++) {
+		var RSSObj = RSSObjs[i];
+		// complete fields
+		RSSObj.userName = userName;
+		RSSObj.lastModified = '';
+		RSSObj.md5 = '';
+		RSSObj.lastChecked = '';
+		collection.findAndModify(
+			{'userName': userName, 'url': RSSObj.url}, 
+			null, 
+			RSSObj,
+			{'upsert': true},
+			function(err, object) {
+				if (err) {
+					socket.write(newsUtil.generateMsg(constant.add, {'result': false, 'errorMsg': err.message}));
+				} else {
+					socket.write(newsUtil.generateMsg(constant.add, {'result': true, 'errorMsg': ''}));
+				}
+			}
+		);
+	}
 }
+
+/**
+  * Modify an existing RSS
+  * An error message will be sent if the RSS does not exist
+  */
+function modify(socket, db, userName, msgContent) {
+	var collection = db.collection('favs');
+	var RSSObjs = msgContent;
+	for (var i = 0, max = RSSObjs.length; i < max; i++) {
+		var RSSObj = RSSObjs[i];
+		collection.findAndModify(
+			{'userName': userName, 'url': RSSObj.url}, 
+			null, 
+			{$set: RSSObj},
+			{},
+			function(err, object) {
+				if (err) {
+					// maybe no matching object is found
+					socket.write(newsUtil.generateMsg(constant.add, {'result': false, 'errorMsg': err.message}));
+				} else {
+					socket.write(newsUtil.generateMsg(constant.add, {'result': true, 'errorMsg': ''}));
+				}
+			}
+		);
+	}
+}
+
+
+
+/**
+  * Add\modify\remove a RSS
+  */
+function remove(socket, db, userName, msgContent) {
+	var collection = db.collection('favs');
+	var RSSObjs = msgContent;
+	for (var i = 0, max = RSSObjs.length; i < max; i++) {
+		var RSSObj = RSSObjs[i];
+		collection.findAndModify(
+			{'userName': userName, 'url': RSSObj.url}, 
+			null, 
+			{},
+			{'remove': true},
+			function(err, object) {
+				if (err) {
+					socket.write(newsUtil.generateMsg(constant.add, {'result': false, 'errorMsg': err.message}));
+				} else {
+					socket.write(newsUtil.generateMsg(constant.add, {'result': true, 'errorMsg': ''}));
+				}
+			}
+		);
+	}
+}
+
 /**
   * Gets one RSS
   * item: one of the RSS items from the database
@@ -121,4 +199,6 @@ function getRSS(item, callback) {
 }
 
 exports.update = update;
-exports.logout = logout;
+exports.add = add;
+exports.modify = modify;
+exports.remove = remove;

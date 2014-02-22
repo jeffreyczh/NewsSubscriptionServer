@@ -46,9 +46,18 @@ client.once('data', function(chunk) {
 					var success = revObj2.content;
 					if (success) {
 						console.log('Log in Successfully!');
-						// client.write(newsUtil.generateMsg(constant.update)); // update all RSS
-						client.write(newsUtil.generateMsg(constant.update, 
-									{urls: ['http://www.developer-tech.com/feed/', 'http://news.qq.com/newsgn/rss_newsgn.xml']})); // update some of the RSS
+						 client.write(newsUtil.generateMsg(constant.update)); // update all RSS
+						//client.write(newsUtil.generateMsg(constant.update, 
+						//			{urls: ['http://www.developer-tech.com/feed/', 'http://news.qq.com/newsgn/rss_newsgn.xml']})); // update some of the RSS
+						//client.write(newsUtil.generateMsg(constant.add, 
+						//						[{'url': 'http://www.chinanews.com/rss/scroll-news.xml', 'name': 'China News'},
+						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': ''}])); // add new RSS
+						//client.write(newsUtil.generateMsg(constant.modify, 
+						//						[{'url': 'http://www.chinanews.com/rss/scroll-news.xml', 'name': 'Chinese News'},
+						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': 'ifeng News'}])); // modify RSS
+						//client.write(newsUtil.generateMsg(constant.remove, 
+						//						[{'url': 'http://news.ifeng.com/rss/index.xml'}])); // remove a RSS
+						
 					} else {
 						console.log('Log in Failed: Wrong user name or password.');
 						client.destroy();
@@ -60,6 +69,16 @@ client.once('data', function(chunk) {
 					console.log(RSSItem.content);
 					console.log('Last Checked: ' + RSSItem.lastChecked);
 					console.log('---------------------------------------------------');
+					
+				} else if (revObj2.msgType == constant.add) {
+					console.log('success?: ' + revObj2.content.result);
+					console.log('error msg?: ' + revObj2.content.errorMsg);
+				} else if (revObj2.msgType == constant.modify) {
+					console.log('success?: ' + revObj2.content.result);
+					console.log('error msg?: ' + revObj2.content.errorMsg);
+				} else if (revObj2.msgType == constant.remove) {
+					console.log('success?: ' + revObj2.content.result);
+					console.log('error msg?: ' + revObj2.content.errorMsg);
 				} else {
 					console.log('Unknown message type: ' + revObj2.msgType);
 				}
