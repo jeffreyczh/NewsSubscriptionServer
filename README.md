@@ -110,12 +110,12 @@ and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used fo
 		<ol>
 			<li>The client can ask for the updates with the message in the format of:<br/>
 			msgType: constant.update<br/>
-			content (optional): an object with the key: <em>urls</em> and the corresponding value: <em>an array list</em> that has the urls of those RSS you need to have updates of. 
-			If the content is not specified, the server will update all the RSS stored in the database</li>
-			<li>Response (It won't be a response if a RSS has no update): <br/>
+			content (optional): an object with the key: <em>urls</em> with the corresponding value: <em>an array list</em> that has the urls of those RSS you need to have updates of. 
+			If the array list is empty, the server will update all the RSS stored in the database</li>
+			<li>Response: <br/>
 			msgType: constant.update<br/>
 			content: an object with the keys: <em>name</em> (the customized name given by the user for a RSS), 
-			<em>url</em>, <em>content</em> (the updated content), <em>lastChecked</em> (the last-checked time stamp in GMT)</li>
+			<em>url</em>, <em>content</em> (the updated content, will be empty if there is no update for this RSS item), <em>lastChecked</em> (the last-checked time stamp in GMT)</li>
 		</ol>
 	</li>
 	<li><b>Modify the favourite list:</b>
