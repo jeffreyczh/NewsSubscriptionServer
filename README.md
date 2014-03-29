@@ -7,13 +7,15 @@ A server to update RSS for the user
 Node.js, Mongodb
 
 <h2>Tags</h2>
-node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module)
+node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
 <h2>Very Brief Introduction</h2>
 <ul>
 <li>The server is implemented with socket in <em>Node.js</em></li>
 <li>It queries the database(<em>MongoDB</em>) running on another instance</li>
 <li>Log in authentication is provided</li>
+<li>Push notification can be enabled</li>
+<li>Interval for the server to check for updates can be auto-adjusted. You are encouraged to provide a more advanced algorithm to dynamically adjust the interval</li>
 <li>Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as <a href='#how-to-implement-clients'>clients</a> related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)</li>
 <li>Any questions/suggestions/modifications are welcome</li>
 <li>:) Thank you!</li>
@@ -21,7 +23,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 
 <h2>Quick Navigation</h2>
 <a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
-<a href='#how-to-implement-clients'>How to Implement Clients</a>
+<a href='#push-notification--dynamic-interval-adjusting'>push notification & dynamic interval adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
 
 <h2>More...</h2>
 <h3>Before You Begin...</h3>
@@ -82,6 +84,22 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used for character encodings conversion of the RSS content</li>
 </ul>
 
+<h3>Push Notification & Dynamic interval adjusting</h3>
+<ul>
+<li>The server can check for updates periodically and push the update to client if the update is available</li>
+<li>The period for the server to check updates is different for each RSS item. 
+The period can be auto-adjusted based on how often the RSS is updated by the source</li>
+<li>The current algorithm for dynamic interval adjusting is pretty simple. It is developed just based on my feelings:</li>
+	<ul>
+		<li>Compare the last-modifed time</li>
+		<li>If it is modifed within 30 minutes, set the checking interval to 1 minute</li>
+		<li>Set the interval to 5 mins for the modified interval 30 min ~ 1 h</li>
+		<li>Then 15 mins for 1 ~ 6 h, 1 h for 6 ~ 24 h, 2 h for more than a day</li>
+		<li>Check the <em>autoInterval.js</em> file for the code</li>
+	</ul>
+<li>You are encouraged to develop a more advaned algorithm to adjust the interval.</li>
+</ul>
+
 <h3>How to Implement Clients</h3>
 <ul>
 	<li>Examples of client-side implementation are in '/testModule'</li>
@@ -110,13 +128,41 @@ and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used fo
 		<ol>
 			<li>The client can ask for the updates with the message in the format of:<br/>
 			msgType: constant.update<br/>
-			content (optional): an object with the key: <em>urls</em> and the corresponding value: <em>an array list</em> that has the urls of those RSS you need to have updates of. 
-			If the content is not specified, the server will update all the RSS stored in the database</li>
-			<li>Response (It won't be a response if a RSS has no update): <br/>
+			content (optional): an object with the key: <em>urls</em> with the corresponding value: <em>an array list</em> that has the urls of those RSS you need to have updates of. 
+			If the array list is empty, the server will update all the RSS stored in the database</li>
+			<li>Response: <br/>
 			msgType: constant.update<br/>
 			content: an object with the keys: <em>name</em> (the customized name given by the user for a RSS), 
-			<em>url</em>, <em>content</em> (the updated content), <em>lastChecked</em> (the last-checked time stamp in GMT)</li>
+			<em>url</em>, <em>content</em> (the updated content, will be empty if there is no update for this RSS item), <em>lastChecked</em> (the last-checked time stamp in GMT)</li>
 		</ol>
+	</li>
+	<li><b>Modify the favourite list:</b>
+		<ul>
+			<li>Add, modify or remove one or multiple RSS to/from the database is allowed</li>
+			<li>msgType: <em>constant.add</em> for adding new RSS to the list, 
+				     <em>constant.modify</em> for modifying existing RSS in the list, and 
+				     <em>constant.remove</em> for removing existing RSS from the list</li>
+			<li>content: an <em>array list</em> of objects. The object could be formatted as:
+				<ul>
+					<li>For adding & modifying: with key <em>url</em> and <em>name</em></li>
+					<li>For removing: with key <em>url</em></li>
+				</ul>
+			</li>
+			<li>Response from the server will have the <em>msgType</em> the same to the requesting message type. The <em>content</em> is an object containing 1. <em>result</em>, a boolean indicating if the request is successfully proceeded, and 2. <em>errorMsg</em>, a string to show the error message if the <em>result</em> is fault. It is an empty string if the <em>result</em> is true.</li>
+		</ul>
+	</li>
+	<li><b>Enable/Disable Push Notification:</b>
+		<ul>
+			<li>Client can turn on/off push notification</li>
+			<li>msgType: <em>constant.push</em></li>
+			<li>content: boolean, true or false to turn on/off</li>
+		</ul>
+	</li>
+	<li><b>Logout:</b>
+		<ul>
+			<li>For now, just simply close the socket of the client to end the connection</li>
+			<li>More features of logout handling might be added in the future</li>
+		</ul>
 	</li>
 
 </ul>
