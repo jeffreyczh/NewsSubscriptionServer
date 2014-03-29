@@ -7,7 +7,7 @@ A server to update RSS for the user
 Node.js, Mongodb
 
 <h2>Tags</h2>
-node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module)
+node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module), push notification
 
 <h2>Very Brief Introduction</h2>
 <ul>
@@ -131,6 +131,13 @@ and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used fo
 				</ul>
 			</li>
 			<li>Response from the server will have the <em>msgType</em> the same to the requesting message type. The <em>content</em> is an object containing 1. <em>result</em>, a boolean indicating if the request is successfully proceeded, and 2. <em>errorMsg</em>, a string to show the error message if the <em>result</em> is fault. It is an empty string if the <em>result</em> is true.</li>
+		</ul>
+	</li>
+	<li><b>Enable/Disable Push Notification:</b>
+		<ul>
+			<li>Client can turn on/off push notification</li>
+			<li>msgType: <em>constant.push</em></li>
+			<li>content: boolean, true or false to turn on/off</li>
 		</ul>
 	</li>
 	<li><b>Logout:</b>
