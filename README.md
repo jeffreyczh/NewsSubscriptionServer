@@ -7,13 +7,15 @@ A server to update RSS for the user
 Node.js, Mongodb
 
 <h2>Tags</h2>
-node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module), push notification
+node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
 <h2>Very Brief Introduction</h2>
 <ul>
 <li>The server is implemented with socket in <em>Node.js</em></li>
 <li>It queries the database(<em>MongoDB</em>) running on another instance</li>
 <li>Log in authentication is provided</li>
+<li>Push notification can be enabled</li>
+<li>Interval for the server to check for updates can be auto-adjusted. You are encouraged to provide a more advanced algorithm to dynamically adjust the interval</li>
 <li>Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as <a href='#how-to-implement-clients'>clients</a> related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)</li>
 <li>Any questions/suggestions/modifications are welcome</li>
 <li>:) Thank you!</li>
@@ -21,7 +23,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 
 <h2>Quick Navigation</h2>
 <a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
-<a href='#how-to-implement-clients'>How to Implement Clients</a>
+<a href='#push-notification--dynamic-interval-adjusting'>push notification & dynamic interval adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
 
 <h2>More...</h2>
 <h3>Before You Begin...</h3>
