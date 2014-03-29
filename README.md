@@ -82,6 +82,22 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used for character encodings conversion of the RSS content</li>
 </ul>
 
+<h3>Push Notification & Dynamic interval adjusting</h3>
+<ul>
+<li>The server can check for updates periodically and push the update to client if the update is available</li>
+<li>The period for the server to check updates is different for each RSS item. 
+The period can be auto-adjusted based on how often the RSS is updated by the source</li>
+<li>The current algorithm for dynamic interval adjusting is pretty simple. It is developed just based on my feelings:</li>
+	<ul>
+		<li>Compare the last-modifed time</li>
+		<li>If it is modifed within 30 minutes, set the checking interval to 1 minute</li>
+		<li>Set the interval to 5 mins for the modified interval 30 min ~ 1 h</li>
+		<li>Then 15 mins for 1 ~ 6 h, 1 h for 6 ~ 24 h, 2 h for more than a day</li>
+		<li>Check the <em>autoInterval.js</em> file for the code</li>
+	</ul>
+<li>You are encouraged to develop a more advaned algorithm to adjust the interval.</li>
+</ul>
+
 <h3>How to Implement Clients</h3>
 <ul>
 	<li>Examples of client-side implementation are in '/testModule'</li>
