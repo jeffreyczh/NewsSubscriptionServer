@@ -17,5 +17,13 @@ var constant = require('./constant');
 	return JSON.stringify(msgObj);
  }
 
+/**
+  * Deep copies an object
+  */
+ function objClone(obj) {
+	 return JSON.parse(JSON.stringify(obj));
+ }
+
 
  exports.generateMsg = generateMsg;
+ exports.objClone = objClone;

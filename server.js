@@ -6,6 +6,7 @@ var pwdHashing = require('./pwdHashing');
 var newsUtil = require('./newsUtil');
 var router = require('./router');
 var requestHandler = require('./requestHandler');
+var pushConfig = require("./pushConfig");
 
 var HOST = '172.31.34.58';
 var PORT = 1215;
@@ -19,16 +20,21 @@ handle[constant.update] = requestHandler.update;
 handle[constant.add] = requestHandler.add;
 handle[constant.modify] = requestHandler.modify;
 handle[constant.remove] = requestHandler.remove;
+handle[constant.push] = requestHandler.push;
+
 
 net.createServer(function(socket) {
     socket.setEncoding('utf8');
     console.log('CONNECTED: ' + socket.remoteAddress +' : '+ socket.remotePort);
 	var dbObj = null;
 	var user_name = null;
-	
+	var pushConfigObj = null;
+
 	auth(socket, function(socket, db, userName){
 		dbObj = db;
 		user_name = userName;
+		/* configuration for notification pushing */
+		pushConfigObj = new pushConfig.PushConfig(db, userName, socket);
 		// login successfully
 		// replace the event handler from handling authentication to handling requests
 		var totalData = '';
@@ -37,7 +43,7 @@ net.createServer(function(socket) {
 				totalData += chunk;
 				var revObj = JSON.parse(totalData);
 				// go to the router
-				router.route(handle, socket, db, userName, revObj.msgType, revObj.content);
+				router.route(handle, socket, db, userName, pushConfigObj, revObj.msgType, revObj.content);
 				totalData = '';
 			} catch (e) {
 				if (e.name != 'SyntaxError') {
@@ -46,6 +52,8 @@ net.createServer(function(socket) {
 				}
 			}
 		});
+		// get the user configuration from the database
+		initPushConfig(db, userName, pushConfigObj);
 	});
     
     socket.on('close', function(had_error) {
@@ -59,11 +67,18 @@ net.createServer(function(socket) {
 			console.log(socket.remoteAddress +': '+ socket.remotePort + ' closed the connection');
 		}
 		console.log('Closed normally?: ' + had_error);
+		if (pushConfigObj) {
+			pushConfigObj.stop();
+		}
     });
 
 	socket.on('error', function(e) {
 		if (e.code !== "ECONNRESET") {
 			console.log(e);
+		} else {
+			if (pushConfigObj) {
+				pushConfigObj.stop();
+			}
 		}
 	});
     
@@ -135,4 +150,23 @@ function auth(socket, callback) {
 			}
 		});
 	});
+}
+
+function initPushConfig(db, userName, pushConfigObj) {
+	// get the push configuration from the database
+	// notification pushing is on/off ?
+	db.collection('userConfig').findOne({'userName': userName}, function(err, result) {
+		if (result) {
+			pushConfigObj.push = result.push;
+			// get all favorite RSS items
+			db.collection('favs').find({'userName': userName})
+							.each(function(err, item) {
+								if (item) {
+									pushConfigObj.add(item.url);
+								}
+							}
+			);
+		}
+	});
+	
 }

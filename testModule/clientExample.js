@@ -9,7 +9,7 @@ var constant = require('../constant');
 var newsUtil = require('../newsUtil');
 var pwdHashing = require('../pwdHashing');
 /* Host and port of the server */
-var HOST = '54.236.248.91';
+var HOST = '54.85.105.161';
 var PORT = 1215;
 
 var client = new net.Socket();
@@ -46,17 +46,36 @@ client.once('data', function(chunk) {
 					var success = revObj2.content;
 					if (success) {
 						console.log('Log in Successfully!');
-						 client.write(newsUtil.generateMsg(constant.update)); // update all RSS
+						// update all RSS
+						//client.write(newsUtil.generateMsg(constant.update));
+						// update some of the RSS
 						//client.write(newsUtil.generateMsg(constant.update, 
-						//			{urls: ['http://www.developer-tech.com/feed/', 'http://news.qq.com/newsgn/rss_newsgn.xml']})); // update some of the RSS
+						//			{urls: ['http://www.developer-tech.com/feed/', 'http://news.qq.com/newsgn/rss_newsgn.xml']}));
+						// add new RSS
 						//client.write(newsUtil.generateMsg(constant.add, 
 						//						[{'url': 'http://www.chinanews.com/rss/scroll-news.xml', 'name': 'China News'},
-						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': ''}])); // add new RSS
+						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': ''},
+						//                         {'url': 'http://www.developer-tech.com/feed/', 'name': 'Developer News'}]));
+						//client.write(newsUtil.generateMsg(constant.add, 
+						//						[{'url': 'http://news.ifeng.com/rss/index.xml', 'name': ''}]));
+						// modify RSS
 						//client.write(newsUtil.generateMsg(constant.modify, 
 						//						[{'url': 'http://www.chinanews.com/rss/scroll-news.xml', 'name': 'Chinese News'},
-						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': 'ifeng News'}])); // modify RSS
+						//						 {'url': 'http://news.ifeng.com/rss/index.xml', 'name': 'ifeng News'}])); 
+						//client.write(newsUtil.generateMsg(constant.modify, 
+						//						[{'url': 'http://news.ifeng.com/rss/index.xml', 'name': 'ifeng News'}])); 
+						// remove a RSS
 						//client.write(newsUtil.generateMsg(constant.remove, 
-						//						[{'url': 'http://news.ifeng.com/rss/index.xml'}])); // remove a RSS
+						//						[{'url': 'http://news.ifeng.com/rss/index.xml'}])); 
+						// turn on/off notification pushing
+						/*setTimeout(function () {
+								client.write(newsUtil.generateMsg(constant.push, false));
+								console.log("Turn off");
+							}, 500);
+						setTimeout(function () {
+								client.write(newsUtil.generateMsg(constant.push, true));
+								console.log("Turn on");
+							}, 180000);*/
 						
 					} else {
 						console.log('Log in Failed: Wrong user name or password.');
@@ -77,6 +96,9 @@ client.once('data', function(chunk) {
 					console.log('success?: ' + revObj2.content.result);
 					console.log('error msg?: ' + revObj2.content.errorMsg);
 				} else if (revObj2.msgType == constant.remove) {
+					console.log('success?: ' + revObj2.content.result);
+					console.log('error msg?: ' + revObj2.content.errorMsg);
+				} else if (revObj2.msgType == constant.push) {
 					console.log('success?: ' + revObj2.content.result);
 					console.log('error msg?: ' + revObj2.content.errorMsg);
 				} else {

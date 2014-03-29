@@ -13,3 +13,4 @@ exports.update = "_#UPDATE#_"; // update the specified RSS immediately
 exports.add = "_#ADD#_"; // add a RSS
 exports.modify = "_#MODIFY#_"; // modify an existing RSS
 exports.remove = "_#REMOVE#_"; // remove an RSS
+exports.push = "_#PUSH#_"; // turn on/off notification pushing
