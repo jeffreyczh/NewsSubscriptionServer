@@ -23,7 +23,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 
 <h2>Quick Navigation</h2>
 <a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
-<a href='#push-notification--dynamic-interval-adjusting'>push notification & dynamic interval adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
+<a href='#push-notification--dynamic-interval-adjusting'>Push Notification & Dynamic Interval Adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
 
 <h2>More...</h2>
 <h3>Before You Begin...</h3>
