@@ -37,6 +37,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 		<ul>
 			<li>users: authentication information of all users</li>
 			<li>favs: favorite RSS list of all users</li>
+			<li>userConfig: Configuration of an user</li>
 		</ul>
 	</li>
 	<li>Fields in 'users': 
@@ -53,6 +54,12 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 			<li>lastModified(for the 'If-Modified-Since' header to use to check if there is update)</li>
 			<li>md5(MD5 of the content for comparison, usually used when the 'If-Modified-Since' header is not available)</li>
 			<li>lastChecked</li>
+		</ul>
+	</li>
+	<li>Fields in 'userConfig':
+		<ul>
+			<li>userName</li>
+			<li>push(boolean, indicate if the push notification has been turned on/off)</li>
 		</ul>
 	</li>
     </ul>
