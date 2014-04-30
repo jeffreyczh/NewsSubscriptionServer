@@ -8,7 +8,7 @@ Node.js, Mongodb
 ##Tags
 node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
-<h2>Very Brief Introduction</h2>
+##Very Brief Introduction
 <ul>
 <li>The server is implemented with socket in <em>Node.js</em></li>
 <li>It queries the database(<em>MongoDB</em>) running on another instance</li>
@@ -20,12 +20,12 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 <li>:) Thank you!</li>
 </ul>
 
-<h2>Quick Navigation</h2>
+##Quick Navigation
 <a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
 <a href='#push-notification--dynamic-interval-adjusting'>Push Notification & Dynamic Interval Adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
 
-<h2>More...</h2>
-<h3>Before You Begin...</h3>
+##More...
+###Before You Begin...
 <ul>
 <li>You may need two instances, with one running the server, and another one running MongoDB</li>
 <li>This project is tested on Amazon EC2 cloud platform</li>
@@ -65,7 +65,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 </li>
 </ul>
 
-<h3>Authentication</h3>
+###Authentication
 <ul>
 <li>The authentication is implemented with the 'crypto' module</li>
 <li>Salt is used to hash the password.<br /> 
@@ -81,7 +81,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 </li>
 </ul>
 
-<h3>RSS Update</h3>
+###RSS Update
 <ul>
 <li>The build-in node.js <b>http</b> module is applied to send GET request to the RSS source</li>
 <li>Each request contains the header 'If-Modified-Since' for version comparison use</li>
@@ -90,7 +90,7 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used for character encodings conversion of the RSS content</li>
 </ul>
 
-<h3>Push Notification & Dynamic interval adjusting</h3>
+###Push Notification & Dynamic interval adjusting
 <ul>
 <li>The server can check for updates periodically and push the update to client if the update is available</li>
 <li>The period for the server to check updates is different for each RSS item. 
@@ -106,7 +106,7 @@ The period can be auto-adjusted based on how often the RSS is updated by the sou
 <li>You are encouraged to develop a more advaned algorithm to adjust the interval.</li>
 </ul>
 
-<h3>How to Implement Clients</h3>
+###How to Implement Clients
 <ul>
 	<li>Examples of client-side implementation are in '/testModule'</li>
 	<li>Socket is used for connection</li>
