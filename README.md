@@ -47,21 +47,16 @@ node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication 
 	* Fields in 'userConfig':
 		* userName
 		* push(boolean, indicate if the push notification has been turned on/off)
-###Authentication
-<ul>
-<li>The authentication is implemented with the 'crypto' module
-<li>Salt is used to hash the password.<br /> 
-    So in the data base, user information is stored as: userName, password(hashed) and salt
-<li>When the client logs in, the server will generate a token and give this token for the client
-    to encrypt the password.<br />The server will then decrypt it and hash the plain password with the salt
-    and compare with the one in data base.
-<li>Techniques here: 
-    <ul>
-      <li>Password hashing: pbkdf2, with 1500 iterations and 128-bit salt. Hash length: 256 bits
-      <li>Password encryption: AES-256, with 128-bit strong randomKey(the token)
-    </ul>
 
-</ul>
+###Authentication
+* The authentication is implemented with the 'crypto' module
+* Salt is used to hash the password.	
+  So in the data base, user information is stored as: userName, password(hashed) and salt
+* When the client logs in, the server will generate a token and give this token for the client to encrypt the password.	
+  The server will then decrypt it and hash the plain password with the salt and compare with the one in data base.
+* Techniques here: 
+	* Password hashing: pbkdf2, with 1500 iterations and 128-bit salt. Hash length: 256 bits
+	* Password encryption: AES-256, with 128-bit strong randomKey(the token)
 
 ###RSS Update
 <ul>
