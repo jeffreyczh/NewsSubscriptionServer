@@ -1,12 +1,11 @@
-NewsSubscriptionServer
-======================
+#NewsSubscriptionServer
 
 A server to update RSS for the user
 
-<h2>Techniques Applied</h2>
+##Techniques Applied
 Node.js, Mongodb
 
-<h2>Tags</h2>
+##Tags
 node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
 <h2>Very Brief Introduction</h2>
