@@ -9,16 +9,14 @@ Node.js, Mongodb
 node.js, mongodb, socket, RSS, server, <a href='#authentication'>authentication security</a>, net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
 ##Very Brief Introduction
-<ul>
-<li>The server is implemented with socket in <em>Node.js</em></li>
-<li>It queries the database(<em>MongoDB</em>) running on another instance</li>
-<li>Log in authentication is provided</li>
-<li>Push notification can be enabled</li>
-<li>Interval for the server to check for updates can be auto-adjusted. You are encouraged to provide a more advanced algorithm to dynamically adjust the interval</li>
-<li>Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as <a href='#how-to-implement-clients'>clients</a> related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)</li>
-<li>Any questions/suggestions/modifications are welcome</li>
-<li>:) Thank you!</li>
-</ul>
+* The server is implemented with socket in <em>Node.js</em>
+* It queries the database(<em>MongoDB</em>) running on another instance
+* Log in authentication is provided
+* Push notification can be enabled
+* Interval for the server to check for updates can be auto-adjusted. You are encouraged to provide a more advanced algorithm to dynamically adjust the interval
+* Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as <a href='#how-to-implement-clients'>clients</a> related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)
+* Any questions/suggestions/modifications are welcome
+* :) Thank you!
 
 ##Quick Navigation
 <a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
