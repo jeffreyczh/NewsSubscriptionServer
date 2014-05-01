@@ -6,7 +6,7 @@ A server to update RSS for the user
 Node.js, Mongodb
 
 ##Tags
-node.js, mongodb, socket, RSS, server, [authentication security](/authentication), net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
+node.js, mongodb, socket, RSS, server, [authentication security](##authentication), net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
 
 ##Very Brief Introduction
 * The server is implemented with socket in <em>Node.js</em>
