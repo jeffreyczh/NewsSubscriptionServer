@@ -6,7 +6,7 @@ A server to update RSS for the user
 Node.js, Mongodb
 
 ##Tags
-node.js, mongodb, socket, RSS, server, [authentication security](#authentication), net(nodejs module), crypto(nodejs module),  <a href='#push-notification--dynamic-interval-adjusting'>push notification</a>
+node.js, mongodb, socket, RSS, server, [authentication security](#authentication), net(nodejs module), crypto(nodejs module), [push notification](#push-notification--dynamic-interval-adjusting)
 
 ##Very Brief Introduction
 * The server is implemented with socket in <em>Node.js</em>
@@ -14,13 +14,13 @@ node.js, mongodb, socket, RSS, server, [authentication security](#authentication
 * Log in authentication is provided
 * Push notification can be enabled
 * Interval for the server to check for updates can be auto-adjusted. You are encouraged to provide a more advanced algorithm to dynamically adjust the interval
-* Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as <a href='#how-to-implement-clients'>clients</a> related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)
+* Some modules for testing are also available in the folder "testModule", which may be good as a reference for you to develop this server, as well as [clients](#how-to-implement-clients) related to this (The modules are implemented in node.js, though, but I think it could still be a hint for you to implement in another language/framework)
 * Any questions/suggestions/modifications are welcome
 * :) Thank you!
 
 ##Quick Navigation
-<a href='#before-you-begin'>Before You Begin...</a> --- <a href='#authentication'>Authentication</a> --- <a href='#rss-update'>RSS Update</a> --- 
-<a href='#push-notification--dynamic-interval-adjusting'>Push Notification & Dynamic Interval Adjusting</a> --- <a href='#how-to-implement-clients'>How to Implement Clients</a>
+[Before You Begin...](#before-you-begin) --- [Authentication](#authentication) --- [RSS Update](#rss-update) --- 
+[Push Notification & Dynamic Interval Adjusting](#push-notification--dynamic-interval-adjusting) --- [How to Implement Clients](#how-to-implement-clients)
 
 ##More...
 ###Before You Begin...
@@ -62,8 +62,8 @@ node.js, mongodb, socket, RSS, server, [authentication security](#authentication
 * The build-in node.js <b>http</b> module is applied to send GET request to the RSS source
 * Each request contains the header 'If-Modified-Since' for version comparison use
 * For those RSS source that does not support 'last-modified' header, its content will be hashed with MD5
-* Two external modules: <a href='https://github.com/JacksonTian/bufferhelper'>bufferhelper</a> 
-  and <a href='https://github.com/ashtuchkin/iconv-lite'>icon-lite</a> are used for character encodings conversion of the RSS content
+* Two external modules: [bufferhelper](https://github.com/JacksonTian/bufferhelper) 
+  and [icon-lite](https://github.com/ashtuchkin/iconv-lite) are used for character encodings conversion of the RSS content
 
 ###Push Notification & Dynamic interval adjusting
 * The server can check for updates periodically and push the update to client if the update is available
